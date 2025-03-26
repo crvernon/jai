@@ -4,7 +4,7 @@ from langchain_community.document_loaders import DirectoryLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_openai import OpenAIEmbeddings
 from langchain_community.vectorstores import FAISS
-from langchain_community.chat_models import ChatOpenAI
+from langchain_openai import ChatOpenAI
 from langchain.chains import ConversationalRetrievalChain
 
 # --- Utility Functions ---
@@ -40,7 +40,7 @@ def init_qa_chain(repo_dir: str):
 
     # Create vector store (logic moved here from get_vectorstore)
     st.write("Processing documents and building vector store...") # Optional: Add user feedback
-    text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=100)
+    text_splitter = RecursiveCharacterTextSplitter(chunk_size=2500, chunk_overlap=100)
     texts = text_splitter.split_documents(docs)
     embeddings = OpenAIEmbeddings()  # Ensure OPENAI_API_KEY is set
     vectorstore = FAISS.from_documents(texts, embeddings)
@@ -57,8 +57,7 @@ def init_qa_chain(repo_dir: str):
 
 # --- Streamlit App Layout ---
 
-st.title("Repository Chatbot")
-st.markdown("This chatbot lets you ask questions about the repository's contents.")
+st.markdown("<h2 style='text-align: center;'>GCIMS AI Foresight Plugin</h2>", unsafe_allow_html=True)
 
 # Repository settings
 REPO_URL = "https://github.com/JGCRI/scalable"
@@ -76,7 +75,7 @@ if "qa_chain" not in st.session_state:
         st.session_state.qa_chain = init_qa_chain(REPO_DIR)
 
 # User input
-query = st.text_input("Enter your question about the repository:")
+query = st.text_area("Enter your question:", height=100) 
 
 if st.button("Send") and query:
     with st.spinner("Processing..."):
